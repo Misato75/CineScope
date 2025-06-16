@@ -1,0 +1,914 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CineScope - 映画レビュー＆考察サイト</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;400;500;600;700&family=Cinzel:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-black: #0a0a0a;
+            --secondary-black: #1a1a1a;
+            --tertiary-black: #2a2a2a;
+            --gold: #d4af37;
+            --light-gold: #f4e4a6;
+            --dark-gold: #b8941f;
+            --silver: #c0c0c0;
+            --text-primary: #ffffff;
+            --text-secondary: #cccccc;
+            --text-muted: #999999;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Noto Serif JP', serif;
+            background-color: var(--primary-black);
+            color: var(--text-primary);
+            line-height: 1.8;
+            overflow-x: hidden;
+        }
+
+        .cinema-bg {
+            background: linear-gradient(135deg, var(--primary-black) 0%, var(--secondary-black) 50%, var(--tertiary-black) 100%);
+        }
+
+        .gold-text {
+            color: var(--gold);
+        }
+
+        .gold-border {
+            border-color: var(--gold);
+        }
+
+        .gold-bg {
+            background-color: var(--gold);
+        }
+
+        .hover-gold:hover {
+            color: var(--gold);
+            transition: all 0.3s ease;
+        }
+
+        .card-dark {
+            background: linear-gradient(145deg, var(--secondary-black), var(--tertiary-black));
+            border: 1px solid var(--tertiary-black);
+        }
+
+        .shadow-cinema {
+            box-shadow: 0 10px 30px rgba(212, 175, 55, 0.1);
+        }
+
+        .title-font {
+            font-family: 'Cinzel', serif;
+        }
+
+        .btn-gold {
+            background: linear-gradient(135deg, var(--gold), var(--dark-gold));
+            color: var(--primary-black);
+            border: none;
+            padding: 12px 24px;
+            border-radius: 6px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .btn-gold:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(212, 175, 55, 0.3);
+        }
+
+        .section {
+            padding: 80px 0;
+        }
+
+        .movie-card {
+            background: var(--secondary-black);
+            border: 1px solid var(--tertiary-black);
+            border-radius: 12px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .movie-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(212, 175, 55, 0.2);
+            border-color: var(--gold);
+        }
+
+        .rating-stars {
+            color: var(--gold);
+        }
+
+        .nav-link {
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--gold);
+            transition: width 0.3s ease;
+        }
+
+        .nav-link:hover::after {
+            width: 100%;
+        }
+
+        .hero-section {
+            background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 600"><rect fill="%23000" width="1000" height="600"/><circle cx="500" cy="300" r="150" fill="%23d4af37" opacity="0.1"/></svg>');
+            background-size: cover;
+            background-position: center;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .article-preview {
+            background: var(--secondary-black);
+            border-left: 4px solid var(--gold);
+            padding: 24px;
+            margin: 24px 0;
+            border-radius: 0 8px 8px 0;
+        }
+
+        .tag {
+            background: var(--tertiary-black);
+            color: var(--gold);
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.875rem;
+            border: 1px solid var(--gold);
+        }
+
+        .divider {
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--gold), transparent);
+            margin: 60px 0;
+        }
+
+        .streaming-logo {
+            width: 40px;
+            height: 40px;
+            background: var(--tertiary-black);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 12px;
+        }
+
+        @media (max-width: 768px) {
+            .section {
+                padding: 40px 0;
+            }
+            
+            .hero-section {
+                min-height: 80vh;
+            }
+        }
+
+        .cinema-frame {
+            border: 3px solid var(--gold);
+            border-radius: 12px;
+            padding: 2px;
+            background: linear-gradient(45deg, var(--gold), var(--dark-gold));
+        }
+
+        .cinema-frame img {
+            border-radius: 8px;
+            width: 100%;
+            height: auto;
+        }
+    </style>
+</head>
+<body class="cinema-bg">
+    <!-- Header -->
+    <header class="fixed top-0 w-full z-50 bg-black bg-opacity-90 backdrop-blur-sm">
+        <div class="container mx-auto px-6 py-4">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-2">
+                    <i class="fas fa-film text-3xl gold-text"></i>
+                    <h1 class="text-3xl font-bold title-font gold-text">CineScope</h1>
+                </div>
+                <nav class="hidden md:flex space-x-8">
+                    <a href="#home" class="nav-link hover-gold">ホーム</a>
+                    <a href="#reviews" class="nav-link hover-gold">レビュー</a>
+                    <a href="#rankings" class="nav-link hover-gold">ランキング</a>
+                    <a href="#features" class="nav-link hover-gold">特集</a>
+                    <a href="#profile" class="nav-link hover-gold">プロフィール</a>
+                </nav>
+                <button class="md:hidden text-white">
+                    <i class="fas fa-bars text-xl"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section id="home" class="hero-section">
+        <div class="container mx-auto px-6 text-center">
+            <h2 class="text-6xl md:text-8xl font-bold title-font gold-text mb-6">CineScope</h2>
+            <p class="text-xl md:text-2xl text-secondary mb-8">映画の世界を深く探求する</p>
+            <p class="text-lg text-muted mb-12 max-w-2xl mx-auto">
+                映画鑑賞を通じて得られる感動や発見を、初心者にもわかりやすく解説。<br>
+                配信サービス別ランキングから監督特集まで、映画の魅力を多角的にお届けします。
+            </p>
+            <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                <button class="btn-gold">最新レビューを読む</button>
+                <button class="border-2 gold-border gold-text px-6 py-3 rounded-lg hover:bg-gold hover:text-black transition-all">
+                    ランキングを見る
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Latest Reviews Section -->
+    <section class="section" id="latest-reviews">
+        <div class="container mx-auto px-6">
+            <div class="text-center mb-16">
+                <h2 class="text-4xl md:text-5xl font-bold title-font gold-text mb-4">最新映画レビュー</h2>
+                <div class="divider"></div>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <!-- Movie Card 1 -->
+                <div class="movie-card shadow-cinema">
+                    <div class="cinema-frame">
+                        <div class="bg-tertiary-black h-64 flex items-center justify-center">
+                            <i class="fas fa-film text-6xl gold-text"></i>
+                        </div>
+                    </div>
+                    <div class="p-6">
+                        <div class="flex items-center justify-between mb-3">
+                            <span class="tag">SF</span>
+                            <div class="rating-stars">
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star-half-alt"></i>
+                                <span class="ml-2 text-sm">4.5</span>
+                            </div>
+                        </div>
+                        <h3 class="text-xl font-bold mb-2">デューン 砂の惑星</h3>
+                        <p class="text-muted text-sm mb-4">壮大なスケールで描かれる宇宙叙事詩の傑作。ヴィルヌーヴ監督の映像美と...</p>
+                        <div class="flex items-center text-sm text-muted">
+                            <i class="fas fa-calendar mr-2"></i>
+                            <span>2024.05.15</span>
+                            <i class="fas fa-eye ml-4 mr-2"></i>
+                            <span>1,234 views</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Movie Card 2 -->
+                <div class="movie-card shadow-cinema">
+                    <div class="cinema-frame">
+                        <div class="bg-tertiary-black h-64 flex items-center justify-center">
+                            <i class="fas fa-heart text-6xl gold-text"></i>
+                        </div>
+                    </div>
+                    <div class="p-6">
+                        <div class="flex items-center justify-between mb-3">
+                            <span class="tag">恋愛</span>
+                            <div class="rating-stars">
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="far fa-star"></i>
+                                <span class="ml-2 text-sm">4.0</span>
+                            </div>
+                        </div>
+                        <h3 class="text-xl font-bold mb-2">君の名は。</h3>
+                        <p class="text-muted text-sm mb-4">新海誠監督が描く、時空を超えた恋愛物語。美しい映像と心に響く音楽が...</p>
+                        <div class="flex items-center text-sm text-muted">
+                            <i class="fas fa-calendar mr-2"></i>
+                            <span>2024.05.12</span>
+                            <i class="fas fa-eye ml-4 mr-2"></i>
+                            <span>2,456 views</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Movie Card 3 -->
+                <div class="movie-card shadow-cinema">
+                    <div class="cinema-frame">
+                        <div class="bg-tertiary-black h-64 flex items-center justify-center">
+                            <i class="fas fa-mask text-6xl gold-text"></i>
+                        </div>
+                    </div>
+                    <div class="p-6">
+                        <div class="flex items-center justify-between mb-3">
+                            <span class="tag">アクション</span>
+                            <div class="rating-stars">
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <span class="ml-2 text-sm">5.0</span>
+                            </div>
+                        </div>
+                        <h3 class="text-xl font-bold mb-2">ジョン・ウィック</h3>
+                        <p class="text-muted text-sm mb-4">キアヌ・リーブス主演の究極のアクション映画。洗練されたアクションシーン...</p>
+                        <div class="flex items-center text-sm text-muted">
+                            <i class="fas fa-calendar mr-2"></i>
+                            <span>2024.05.10</span>
+                            <i class="fas fa-eye ml-4 mr-2"></i>
+                            <span>3,789 views</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Rankings Section -->
+    <section class="section" id="rankings">
+        <div class="container mx-auto px-6">
+            <div class="text-center mb-16">
+                <h2 class="text-4xl md:text-5xl font-bold title-font gold-text mb-4">閲覧数ランキング</h2>
+                <div class="divider"></div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-12">
+                <!-- Popular Reviews -->
+                <div class="card-dark p-8 rounded-lg shadow-cinema">
+                    <h3 class="text-2xl font-bold gold-text mb-6">
+                        <i class="fas fa-trophy mr-2"></i>人気レビュー TOP5
+                    </h3>
+                    <div class="space-y-4">
+                        <div class="flex items-center space-x-4 p-4 bg-black bg-opacity-30 rounded-lg">
+                            <span class="text-2xl font-bold gold-text">1</span>
+                            <div class="flex-1">
+                                <h4 class="font-bold">インセプション 完全解説</h4>
+                                <p class="text-sm text-muted">クリストファー・ノーランの傑作を徹底分析</p>
+                            </div>
+                            <span class="text-sm text-muted">5,432 views</span>
+                        </div>
+                        <div class="flex items-center space-x-4 p-4 bg-black bg-opacity-30 rounded-lg">
+                            <span class="text-2xl font-bold gold-text">2</span>
+                            <div class="flex-1">
+                                <h4 class="font-bold">千と千尋の神隠し 考察</h4>
+                                <p class="text-sm text-muted">ジブリ作品の隠された意味を探る</p>
+                            </div>
+                            <span class="text-sm text-muted">4,821 views</span>
+                        </div>
+                        <div class="flex items-center space-x-4 p-4 bg-black bg-opacity-30 rounded-lg">
+                            <span class="text-2xl font-bold gold-text">3</span>
+                            <div class="flex-1">
+                                <h4 class="font-bold">パラサイト 半地下の家族</h4>
+                                <p class="text-sm text-muted">ポン・ジュノ監督の社会派サスペンス</p>
+                            </div>
+                            <span class="text-sm text-muted">3,654 views</span>
+                        </div>
+                        <div class="flex items-center space-x-4 p-4 bg-black bg-opacity-30 rounded-lg">
+                            <span class="text-2xl font-bold gold-text">4</span>
+                            <div class="flex-1">
+                                <h4 class="font-bold">アベンジャーズ エンドゲーム</h4>
+                                <p class="text-sm text-muted">MCU最大の戦いを振り返る</p>
+                            </div>
+                            <span class="text-sm text-muted">3,287 views</span>
+                        </div>
+                        <div class="flex items-center space-x-4 p-4 bg-black bg-opacity-30 rounded-lg">
+                            <span class="text-2xl font-bold gold-text">5</span>
+                            <div class="flex-1">
+                                <h4 class="font-bold">ラ・ラ・ランド</h4>
+                                <p class="text-sm text-muted">現代ミュージカルの新たな可能性</p>
+                            </div>
+                            <span class="text-sm text-muted">2,943 views</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Streaming Rankings -->
+                <div class="card-dark p-8 rounded-lg shadow-cinema">
+                    <h3 class="text-2xl font-bold gold-text mb-6">
+                        <i class="fas fa-play-circle mr-2"></i>配信サービス別ランキング
+                    </h3>
+                    <div class="space-y-6">
+                        <!-- Netflix -->
+                        <div>
+                            <div class="flex items-center mb-3">
+                                <div class="streaming-logo">
+                                    <span class="text-red-500 font-bold text-sm">N</span>
+                                </div>
+                                <h4 class="font-bold text-lg">Netflix</h4>
+                            </div>
+                            <div class="space-y-2 ml-12">
+                                <div class="flex justify-between items-center">
+                                    <span>ストレンジャー・シングス</span>
+                                    <span class="rating-stars text-sm">★★★★☆</span>
+                                </div>
+                                <div class="flex justify-between items-center">
+                                    <span>ウィッチャー</span>
+                                    <span class="rating-stars text-sm">★★★★☆</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Amazon Prime -->
+                        <div>
+                            <div class="flex items-center mb-3">
+                                <div class="streaming-logo">
+                                    <span class="text-blue-400 font-bold text-sm">P</span>
+                                </div>
+                                <h4 class="font-bold text-lg">Amazon Prime</h4>
+                            </div>
+                            <div class="space-y-2 ml-12">
+                                <div class="flex justify-between items-center">
+                                    <span>ザ・ボーイズ</span>
+                                    <span class="rating-stars text-sm">★★★★★</span>
+                                </div>
+                                <div class="flex justify-between items-center">
+                                    <span>マーベラス・ミセス・メイゼル</span>
+                                    <span class="rating-stars text-sm">★★★★☆</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Disney+ -->
+                        <div>
+                            <div class="flex items-center mb-3">
+                                <div class="streaming-logo">
+                                    <span class="text-blue-300 font-bold text-sm">D+</span>
+                                </div>
+                                <h4 class="font-bold text-lg">Disney+</h4>
+                            </div>
+                            <div class="space-y-2 ml-12">
+                                <div class="flex justify-between items-center">
+                                    <span>マンダロリアン</span>
+                                    <span class="rating-stars text-sm">★★★★★</span>
+                                </div>
+                                <div class="flex justify-between items-center">
+                                    <span>ワンダヴィジョン</span>
+                                    <span class="rating-stars text-sm">★★★★☆</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="section" id="features">
+        <div class="container mx-auto px-6">
+            <div class="text-center mb-16">
+                <h2 class="text-4xl md:text-5xl font-bold title-font gold-text mb-4">特集コンテンツ</h2>
+                <div class="divider"></div>
+            </div>
+
+            <!-- Director Features -->
+            <div class="mb-16">
+                <h3 class="text-3xl font-bold gold-text mb-8">
+                    <i class="fas fa-user-tie mr-2"></i>監督特集
+                </h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                    <div class="movie-card text-center shadow-cinema">
+                        <div class="p-6">
+                            <div class="w-24 h-24 bg-tertiary-black rounded-full mx-auto mb-4 flex items-center justify-center">
+                                <i class="fas fa-user text-3xl gold-text"></i>
+                            </div>
+                            <h4 class="font-bold text-lg mb-2">クリストファー・ノーラン</h4>
+                            <p class="text-sm text-muted mb-4">時間と記憶を操る映像マジシャン</p>
+                            <div class="text-xs text-muted">
+                                <span>インセプション</span> • <span>インターステラー</span> • <span>テネット</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="movie-card text-center shadow-cinema">
+                        <div class="p-6">
+                            <div class="w-24 h-24 bg-tertiary-black rounded-full mx-auto mb-4 flex items-center justify-center">
+                                <i class="fas fa-user text-3xl gold-text"></i>
+                            </div>
+                            <h4 class="font-bold text-lg mb-2">細田守</h4>
+                            <p class="text-sm text-muted mb-4">家族の絆を描くアニメーション監督</p>
+                            <div class="text-xs text-muted">
+                                <span>竜とそばかすの姫</span> • <span>未来のミライ</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="movie-card text-center shadow-cinema">
+                        <div class="p-6">
+                            <div class="w-24 h-24 bg-tertiary-black rounded-full mx-auto mb-4 flex items-center justify-center">
+                                <i class="fas fa-user text-3xl gold-text"></i>
+                            </div>
+                            <h4 class="font-bold text-lg mb-2">デニス・ヴィルヌーヴ</h4>
+                            <p class="text-sm text-muted mb-4">SF映画の新たな可能性を切り開く</p>
+                            <div class="text-xs text-muted">
+                                <span>ブレードランナー2049</span> • <span>デューン</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="movie-card text-center shadow-cinema">
+                        <div class="p-6">
+                            <div class="w-24 h-24 bg-tertiary-black rounded-full mx-auto mb-4 flex items-center justify-center">
+                                <i class="fas fa-user text-3xl gold-text"></i>
+                            </div>
+                            <h4 class="font-bold text-lg mb-2">ジョーダン・ピール</h4>
+                            <p class="text-sm text-muted mb-4">社会派ホラーの革命家</p>
+                            <div class="text-xs text-muted">
+                                <span>ゲット・アウト</span> • <span>アス</span> • <span>ノープ</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Series Features -->
+            <div class="mb-16">
+                <h3 class="text-3xl font-bold gold-text mb-8">
+                    <i class="fas fa-layer-group mr-2"></i>シリーズ特集
+                </h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    <div class="movie-card shadow-cinema">
+                        <div class="p-6">
+                            <div class="flex items-center mb-4">
+                                <div class="w-12 h-12 bg-tertiary-black rounded-lg flex items-center justify-center mr-4">
+                                    <i class="fas fa-magic text-xl gold-text"></i>
+                                </div>
+                                <h4 class="font-bold text-xl">ハリー・ポッター</h4>
+                            </div>
+                            <p class="text-muted mb-4">魔法界の壮大な物語を全8作品で徹底解説。隠された伏線や象徴的な意味を探る。</p>
+                            <div class="flex items-center text-sm text-muted">
+                                <i class="fas fa-film mr-2"></i>
+                                <span>全8作品</span>
+                                <i class="fas fa-clock ml-4 mr-2"></i>
+                                <span>約20時間</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="movie-card shadow-cinema">
+                        <div class="p-6">
+                            <div class="flex items-center mb-4">
+                                <div class="w-12 h-12 bg-tertiary-black rounded-lg flex items-center justify-center mr-4">
+                                    <i class="fas fa-shield-alt text-xl gold-text"></i>
+                                </div>
+                                <h4 class="font-bold text-xl">MCU（マーベル）</h4>
+                            </div>
+                            <p class="text-muted mb-4">アベンジャーズから最新作まで、マーベル・シネマティック・ユニバースの軌跡。</p>
+                            <div class="flex items-center text-sm text-muted">
+                                <i class="fas fa-film mr-2"></i>
+                                <span>30作品+</span>
+                                <i class="fas fa-clock ml-4 mr-2"></i>
+                                <span>約70時間</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="movie-card shadow-cinema">
+                        <div class="p-6">
+                            <div class="flex items-center mb-4">
+                                <div class="w-12 h-12 bg-tertiary-black rounded-lg flex items-center justify-center mr-4">
+                                    <i class="fas fa-rocket text-xl gold-text"></i>
+                                </div>
+                                <h4 class="font-bold text-xl">ジブリ作品</h4>
+                            </div>
+                            <p class="text-muted mb-4">宮崎駿・高畑勲監督作品から読み解く、日本アニメーションの美学と哲学。</p>
+                            <div class="flex items-center text-sm text-muted">
+                                <i class="fas fa-film mr-2"></i>
+                                <span>23作品</span>
+                                <i class="fas fa-clock ml-4 mr-2"></i>
+                                <span>約40時間</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Tag Navigation -->
+    <section class="section bg-secondary-black">
+        <div class="container mx-auto px-6">
+            <div class="text-center mb-12">
+                <h3 class="text-3xl font-bold gold-text mb-4">ジャンル・タグで探す</h3>
+                <p class="text-muted">お気に入りのジャンルから映画を発見</p>
+            </div>
+            <div class="flex flex-wrap justify-center gap-4">
+                <span class="tag cursor-pointer hover:bg-gold hover:text-black">#恋愛</span>
+                <span class="tag cursor-pointer hover:bg-gold hover:text-black">#ホラー</span>
+                <span class="tag cursor-pointer hover:bg-gold hover:text-black">#SF</span>
+                <span class="tag cursor-pointer hover:bg-gold hover:text-black">#アニメ</span>
+                <span class="tag cursor-pointer hover:bg-gold hover:text-black">#アクション</span>
+                <span class="tag cursor-pointer hover:bg-gold hover:text-black">#コメディ</span>
+                <span class="tag cursor-pointer hover:bg-gold hover:text-black">#ドラマ</span>
+                <span class="tag cursor-pointer hover:bg-gold hover:text-black">#サスペンス</span>
+                <span class="tag cursor-pointer hover:bg-gold hover:text-black">#ファンタジー</span>
+                <span class="tag cursor-pointer hover:bg-gold hover:text-black">#伏線</span>
+                <span class="tag cursor-pointer hover:bg-gold hover:text-black">#初心者向け</span>
+                <span class="tag cursor-pointer hover:bg-gold hover:text-black">#考察</span>
+                <span class="tag cursor-pointer hover:bg-gold hover:text-black">#名作</span>
+                <span class="tag cursor-pointer hover:bg-gold hover:text-black">#話題作</span>
+                <span class="tag cursor-pointer hover:bg-gold hover:text-black">#配信中</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- Sample Article -->
+    <section class="section" id="sample-article">
+        <div class="container mx-auto px-6">
+            <div class="max-w-4xl mx-auto">
+                <div class="text-center mb-12">
+                    <h2 class="text-4xl md:text-5xl font-bold title-font gold-text mb-4">記事サンプル</h2>
+                    <div class="divider"></div>
+                </div>
+                
+                <article class="card-dark p-8 rounded-lg shadow-cinema">
+                    <div class="flex items-center space-x-4 mb-6">
+                        <span class="tag">SF</span>
+                        <span class="tag">考察</span>
+                        <span class="tag">ノーラン</span>
+                    </div>
+                    
+                    <h1 class="text-3xl md:text-4xl font-bold gold-text mb-6">
+                        『インセプション』完全解説 - 夢の中の夢、その構造と意味
+                    </h1>
+                    
+                    <div class="flex items-center space-x-6 text-sm text-muted mb-8">
+                        <div class="flex items-center">
+                            <i class="fas fa-calendar mr-2"></i>
+                            <span>2024年5月15日</span>
+                        </div>
+                        <div class="flex items-center">
+                            <i class="fas fa-clock mr-2"></i>
+                            <span>読了時間: 約8分</span>
+                        </div>
+                        <div class="flex items-center">
+                            <i class="fas fa-eye mr-2"></i>
+                            <span>5,432 views</span>
+                        </div>
+                    </div>
+
+                    <div class="cinema-frame mb-8">
+                        <div class="bg-tertiary-black h-64 flex items-center justify-center">
+                            <i class="fas fa-brain text-6xl gold-text"></i>
+                        </div>
+                    </div>
+
+                    <div class="prose prose-lg max-w-none text-text-primary">
+                        <h2 class="text-2xl font-bold gold-text mb-4">作品基本情報</h2>
+                        <div class="card-dark p-4 rounded-lg mb-6">
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div>
+                                    <p><strong class="gold-text">監督:</strong> クリストファー・ノーラン</p>
+                                    <p><strong class="gold-text">公開年:</strong> 2010年</p>
+                                    <p><strong class="gold-text">主演:</strong> レオナルド・ディカプリオ</p>
+                                </div>
+                                <div>
+                                    <p><strong class="gold-text">ジャンル:</strong> SF・サスペンス</p>
+                                    <p><strong class="gold-text">上映時間:</strong> 148分</p>
+                                    <p><strong class="gold-text">配信:</strong> Netflix、Amazon Prime</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <h2 class="text-2xl font-bold gold-text mb-4">あらすじ（ネタバレ注意）</h2>
+                        <p class="mb-6">
+                            他人の潜在意識に潜り込み、秘密を盗み出すという特殊技術を持つドム・コブ（レオナルド・ディカプリオ）。
+                            彼は企業スパイとして活動していたが、今度は「インセプション」という前代未聞の任務を依頼される。
+                            それは、他人の心に「アイデアを植え付ける」という、これまで不可能とされてきた行為だった。
+                        </p>
+
+                        <h2 class="text-2xl font-bold gold-text mb-4">夢の多層構造 - ノーランの巧妙な設計</h2>
+                        <p class="mb-4">
+                            本作の最大の特徴は、「夢の中の夢」という多層構造にあります。物語は以下の4つの階層で構成されています：
+                        </p>
+                        <div class="article-preview">
+                            <h4 class="font-bold gold-text mb-2">第1階層：雨の街</h4>
+                            <p class="text-sm mb-4">チームが最初に潜り込む夢の世界。車両での追跡劇が展開される。</p>
+                            
+                            <h4 class="font-bold gold-text mb-2">第2階層：ホテル</h4>
+                            <p class="text-sm mb-4">重力が変化する無重力空間での戦闘シーン。上の階層の影響を受ける。</p>
+                            
+                            <h4 class="font-bold gold-text mb-2">第3階層：雪山の要塞</h4>
+                            <p class="text-sm mb-4">軍事基地での銃撃戦。最も深い階層での緊張感あふれる展開。</p>
+                            
+                            <h4 class="font-bold gold-text mb-2">リンボ（辺獄）</h4>
+                            <p class="text-sm">最深部の意識の世界。時間の概念が曖昧になる危険な領域。</p>
+                        </div>
+
+                        <h2 class="text-2xl font-bold gold-text mb-4">映像技術と演出の革新</h2>
+                        <p class="mb-4">
+                            ノーラン監督は、CGIに頼らず実写撮影にこだわることで知られています。
+                            特に回転する廊下でのアクションシーンは、実際に廊下セットを回転させることで撮影されました。
+                        </p>
+                        
+                        <h2 class="text-2xl font-bold gold-text mb-4">哲学的テーマ：現実と夢の境界</h2>
+                        <p class="mb-4">
+                            本作は単なるSF映画ではなく、現実と夢、記憶と忘却、罪悪感と赦しといった
+                            深い哲学的テーマを扱っています。コブが妻モルとの関係で抱える罪悪感は、
+                            物語全体を通じて彼を苦しめ続けます。
+                        </p>
+
+                        <h2 class="text-2xl font-bold gold-text mb-4">まとめ：初心者でも楽しめるポイント</h2>
+                        <p class="mb-4">
+                            複雑な構造を持つ本作ですが、以下のポイントに注目すれば初心者でも十分楽しめます：
+                        </p>
+                        <ul class="list-disc list-inside mb-6 space-y-2">
+                            <li>各階層での時間の流れの違いに注目</li>
+                            <li>回転するコマ（トーテム）の意味を考える</li>
+                            <li>音楽の使い方と場面の演出効果</li>
+                            <li>登場人物の感情の変化を追う</li>
+                        </ul>
+
+                        <div class="card-dark p-6 rounded-lg mt-8">
+                            <h3 class="text-xl font-bold gold-text mb-4">関連作品</h3>
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                <div class="text-center">
+                                    <h4 class="font-bold mb-2">メメント</h4>
+                                    <p class="text-sm text-muted">記憶をテーマにしたノーラン初期作品</p>
+                                </div>
+                                <div class="text-center">
+                                    <h4 class="font-bold mb-2">インターステラー</h4>
+                                    <p class="text-sm text-muted">時間と空間を扱うSF大作</p>
+                                </div>
+                                <div class="text-center">
+                                    <h4 class="font-bold mb-2">テネット</h4>
+                                    <p class="text-sm text-muted">時間の逆行をテーマにした最新作</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </article>
+            </div>
+        </div>
+    </section>
+
+    <!-- Profile Section -->
+    <section class="section bg-secondary-black" id="profile">
+        <div class="container mx-auto px-6">
+            <div class="text-center mb-16">
+                <h2 class="text-4xl md:text-5xl font-bold title-font gold-text mb-4">プロフィール</h2>
+                <div class="divider"></div>
+            </div>
+            
+            <div class="max-w-4xl mx-auto">
+                <div class="card-dark p-8 rounded-lg shadow-cinema">
+                    <div class="flex flex-col md:flex-row items-center md:items-start space-y-6 md:space-y-0 md:space-x-8">
+                        <div class="flex-shrink-0">
+                            <div class="w-48 h-48 bg-tertiary-black rounded-full flex items-center justify-center">
+                                <i class="fas fa-user text-6xl gold-text"></i>
+                            </div>
+                        </div>
+                        <div class="flex-1 text-center md:text-left">
+                            <h3 class="text-3xl font-bold gold-text mb-4">CineScope 編集長</h3>
+                            <p class="text-lg text-muted mb-6">
+                                映画愛好家・Web制作者として、映画の魅力を多くの人に伝えたいという想いから本サイトを立ち上げました。
+                                特に、映画初心者の方にも分かりやすい解説と考察を心がけています。
+                            </p>
+                            
+                            <div class="mb-6">
+                                <h4 class="text-xl font-bold gold-text mb-4">好きな映画ジャンル</h4>
+                                <div class="flex flex-wrap gap-2">
+                                    <span class="tag">SF・ファンタジー</span>
+                                    <span class="tag">サスペンス・ミステリー</span>
+                                    <span class="tag">アニメーション</span>
+                                    <span class="tag">ドキュメンタリー</span>
+                                </div>
+                            </div>
+                            
+                            <div class="mb-6">
+                                <h4 class="text-xl font-bold gold-text mb-4">好きな監督</h4>
+                                <p class="text-muted">
+                                    クリストファー・ノーラン、デニス・ヴィルヌーヴ、細田守、
+                                    ジョーダン・ピール、ポン・ジュノ、新海誠、是枝裕和
+                                </p>
+                            </div>
+                            
+                            <div>
+                                <h4 class="text-xl font-bold gold-text mb-4">このサイトについて</h4>
+                                <p class="text-muted mb-4">
+                                    CineScopeは、映画レビューと考察を通じて、映画の新たな楽しみ方を提案するサイトです。
+                                    難しい映画用語を使わず、誰でも理解できる言葉で映画の魅力をお伝えします。
+                                </p>
+                                <p class="text-muted">
+                                    また、配信サービス別のランキングや監督特集など、
+                                    映画選びに役立つ情報も定期的に更新しています。
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-8 pt-8 border-t border-tertiary-black">
+                        <h4 class="text-xl font-bold gold-text mb-4 text-center">SNS・お問い合わせ</h4>
+                        <div class="flex justify-center space-x-6">
+                            <a href="#" class="text-4xl hover-gold transition-all">
+                                <i class="fab fa-twitter"></i>
+                            </a>
+                            <a href="#" class="text-4xl hover-gold transition-all">
+                                <i class="fab fa-instagram"></i>
+                            </a>
+                            <a href="#" class="text-4xl hover-gold transition-all">
+                                <i class="fab fa-youtube"></i>
+                            </a>
+                            <a href="#" class="text-4xl hover-gold transition-all">
+                                <i class="fas fa-envelope"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-black py-12">
+        <div class="container mx-auto px-6">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div>
+                    <div class="flex items-center space-x-2 mb-4">
+                        <i class="fas fa-film text-2xl gold-text"></i>
+                        <h3 class="text-2xl font-bold title-font gold-text">CineScope</h3>
+                    </div>
+                    <p class="text-muted">
+                        映画の世界を深く探求し、新たな発見と感動をお届けする映画レビューサイト
+                    </p>
+                </div>
+                <div>
+                    <h4 class="text-lg font-bold gold-text mb-4">サイトマップ</h4>
+                    <ul class="space-y-2 text-muted">
+                        <li><a href="#home" class="hover-gold">ホーム</a></li>
+                        <li><a href="#reviews" class="hover-gold">映画レビュー</a></li>
+                        <li><a href="#rankings" class="hover-gold">ランキング</a></li>
+                        <li><a href="#features" class="hover-gold">特集</a></li>
+                        <li><a href="#profile" class="hover-gold">プロフィール</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="text-lg font-bold gold-text mb-4">法的情報</h4>
+                    <ul class="space-y-2 text-muted">
+                        <li><a href="#" class="hover-gold">利用規約</a></li>
+                        <li><a href="#" class="hover-gold">プライバシーポリシー</a></li>
+                        <li><a href="#" class="hover-gold">お問い合わせ</a></li>
+                        <li><a href="#" class="hover-gold">サイトマップ</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="divider"></div>
+            <div class="text-center text-muted">
+                <p>&copy; 2024 CineScope. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Smooth scrolling for navigation links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        // Add scroll effect to header
+        window.addEventListener('scroll', function() {
+            const header = document.querySelector('header');
+            if (window.scrollY > 100) {
+                header.style.background = 'rgba(0, 0, 0, 0.95)';
+            } else {
+                header.style.background = 'rgba(0, 0, 0, 0.90)';
+            }
+        });
+
+        // Add fade-in animation for cards
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = '1';
+                    entry.target.style.transform = 'translateY(0)';
+                }
+            });
+        });
+
+        document.querySelectorAll('.movie-card').forEach(card => {
+            card.style.opacity = '0';
+            card.style.transform = 'translateY(20px)';
+            card.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+            observer.observe(card);
+        });
+    </script>
+</body>
+</html>
+
